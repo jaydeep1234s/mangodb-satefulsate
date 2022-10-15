@@ -1,0 +1,7 @@
+StatefulSet
+
+The pièce de résistance. The StatefulSet actually runs MongoDB and orchestrates everything together. StatefulSets differ from Kubernetes ReplicaSets (not to be confused with MongoDB replica sets!) in certain ways that makes them more suited for stateful applications. Unlike Kubernetes ReplicaSets, pods created under a StatefulSet have a few unique attributes. The name of the pod is not random, instead each pod gets an ordinal name. Combined with the Headless Service, this allows pods to have stable identification. In addition, pods are created one at a time instead of all at once, which can help when bootstrapping a stateful system. You can read more about StatefulSets in the documentation.
+
+Just like before, this “sidecar” container will configure the MongoDB replica set automatically. A “sidecar” is a helper container which helps the main container do its work.
+
+The configuration for the StatefulSet looks like this:
