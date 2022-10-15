@@ -1,0 +1,25 @@
+What Is StatefulSet?
+StatefulSet represents a set of pods unique, persistent and with a stable pod name. In the case of the DeploymentSet, whenever you deploy a pod, on every deployment or restart you will get a different pod name — something like “mongo-db-7f4b4b99b4-zmnw8”. Here, the pod name will change when it restarts. And on the next restart, it could be anything like “mongo-db-8eab2b99b4-cmda8”. If we want a stable pod name, StatefulSet can be used. Then, even when it restarts, we will get the same pod name (eg:- “mongo-db-0”).
+StatefulSets are useful for stateful applications, which require a stable pod name.
+1.	pvc.yaml
+We need to create a pvc.yaml file first, so that even if our pod restarts or gets deleted, our data won’t be lost.
+2. StatefulSet.yaml
+We need to create a Stateful yaml file for deploying MongoDB on Kubernetes. The image that I am using for the deployment is “mongo” Statefulset so that we get a unique pod name each time.
+a. Under volumeMounts, the mountPath should be “/data/db” only. Any other name will result in a loss of data if the pod restarts as the data is persisted on /data/db path only.
+b. Under volumes, the claimName should be the same name that you have given in the pvc.yaml file. In my case, this is “mongodb-pvc”.
+c. Under env variables, you need to mention: MONGO_INITDB_ROOT_USERNAME and MONGO_INITDB_ROOT_PASSWORD. The username and password can be anything of your choice.
+Once the yaml for statefulset is created, we need to apply the deployment using the following command:
+kubectl apply -f statefulset.yaml -n <namespace>
+To check if the deployment has been created, run the following command.
+kubectl get statefulsets -n <namespace>
+3. HeadLessService.yaml
+In StatefulSet, instead of the normal service, we need to create a headless service.
+A headless service is a service with a service IP, but instead of load-balancing it will return the IPs of our associated pods. This allows us to interact directly with the pods instead of a proxy. It is as simple as specifying the cluster IP as none.
+---
+2.	Connection for StatefulSet
+3.	Here, the IP address will be the IP address for the pod. This is unlike deploymentset, where we use the IP address for the node instead of the pod IP.
+4.	To check the pod IP address, run the following command:
+5.	kubectl get pod <pod_name>-o wide -n <namespace>
+6.	If you want to use nodePort with StatefulSets, you can use the following configuration.
+7.	Here, instead of the headless service, we can create a normal service and add externalTrafficPolicy: “Local”.
+8.	Now, we can access the MongoDB with the node IP address and nodePort, i.e., 30332.
